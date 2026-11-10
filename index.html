@@ -594,6 +594,12 @@ svg.i.sm { width: 16px; height: 16px; }
   .kicker { margin-bottom: 6px; }
 }
 
+/* --- Usability-test refinements (v17.2) ---------------------------------- */
+.hint-link { display: inline; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.hint-link:hover { text-decoration-thickness: 2px; }
+.submit-help { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 var(--s3); padding: 12px 14px; border-radius: var(--radius-m); background: var(--alice); font-size: 15px; line-height: 1.45; color: var(--ink); }
+.submit-help svg { width: 18px; height: 18px; margin-top: 2px; color: var(--ink-muted); }
+
 </style>
 </head>
 <body>
@@ -1029,7 +1035,7 @@ function viewHome() {
           <button class="demo-chip" data-act="about" data-k="about">${I.info}About</button>
         </div>
         <h1 class="display" tabindex="-1" data-main>My Opportunities</h1>
-        <p class="lead">Decide what’s worth your time. Plan the work for what is.</p>
+        <p class="lead">Evaluate opportunities, plan applications, and track your progress.</p>
         <button class="btn btn-accent block" data-act="go-import" data-k="import">${I.plus}Import Opportunity</button>
       </section>
       <div class="filters" role="group" aria-label="Filter by status">
@@ -1060,7 +1066,7 @@ function viewImport() {
           placeholder="https://" value="${esc(S.url)}" data-input="url" data-k="url"
           aria-describedby="${e ? 'url-error' : 'url-hint'}" ${e ? 'aria-invalid="true"' : ''}>
         ${e ? `<div class="error" id="url-error" role="alert">${I.alert}<div><strong>${esc(e.title)}</strong>${esc(e.body)}${e.manual ? `<div><button type="button" class="btn-text" data-act="manual" data-k="manual">Enter details myself</button></div>` : ''}</div></div>`
-             : `<p class="hint" id="url-hint">Use the organiser’s own page for the most reliable details.</p>`}
+             : `<p class="hint" id="url-hint">Paste an opportunity link to preview its details, or <button type="button" class="hint-link" data-act="to-samples" data-k="to-samples">try a sample opportunity</button>.</p>`}
         <button class="btn btn-accent block" style="margin-top:16px" type="submit" data-k="extract" id="extract-btn" ${S.url.trim() ? '' : 'disabled'}>Extract Details</button>
         <div class="lookfor">
           <div class="label">AI-assisted extraction looks for</div>
@@ -1069,8 +1075,9 @@ function viewImport() {
           </ul>
         </div>
         <div class="samples">
-          <div class="label">Links ArtRamp has a saved summary for</div>
-          ${samples.map((f) => `<button type="button" class="sample" data-act="sample" data-url="${esc(f.source)}" data-k="s-${esc(f.id)}">${img(f, 'thumb', { decorative: true })}<span>${f.practice ? '<span class="badge demo" style="margin-bottom:4px">Practice · fictional</span>' : ''}<span class="t">${esc(f.title)}</span><span class="u">${esc(f.source)}</span></span></button>`).join('')}
+          <div class="label" id="samples-h">Try a sample opportunity</div>
+          <p class="hint" style="margin:-4px 0 12px">Tap one to fill in the link.</p>
+          ${samples.map((f) => `<button type="button" class="sample" data-act="sample" data-url="${esc(f.source)}" data-k="s-${esc(f.id)}">${img(f, 'thumb', { decorative: true })}<span><span class="badge demo" style="margin-bottom:4px">${f.practice ? 'Sample · practice' : 'Sample'}</span><span class="t">${esc(f.title)}</span><span class="u">${esc(f.source)}</span></span></button>`).join('')}
         </div>
         <p class="footnote">${I.info}<span><strong>Prototype:</strong> ArtRamp doesn’t read pages live yet. The three real links return a summary saved on ${fmt(CHECKED_ON)}; the practice call is fictional, for testing. For any other link, enter the details yourself.</span></p>
       </form>
@@ -1453,12 +1460,13 @@ function viewProgress() {
       ${open.length ? `<section class="section"><h2 class="label" style="margin-bottom:8px">Still to do · ${open.length}</h2><ul>${open.map((t) => taskRow(o, t)).join('')}</ul></section>` : ''}
       <section class="apply" aria-labelledby="apply-h">
         <h2 class="h2" id="apply-h">Apply on the official website</h2>
-        <p class="lead small">ArtRamp doesn’t submit applications. You submit on the organiser’s site, then come back here.</p>
+        <p class="lead small">ArtRamp doesn’t submit applications for you.</p>
         <ol>
           <li class="${o.opened ? 'done' : ''}">Open the official application website${o.opened ? '<span class="vh"> — done</span>' : ''}</li>
           <li>Submit your application there</li>
           <li>Return here and mark it as submitted</li>
         </ol>
+        <p class="submit-help">${I.info}<span>Submit on the official website, then return to mark your application as submitted.</span></p>
         ${o.practice ? siteLink(o, 'apply', 'Go to Application Website', { cls: `btn ${o.opened ? 'btn-outline' : 'btn-light'} block`, k: 'apply-site' }) : extLink(o.applyUrl || o.source, 'Go to Application Website', { cls: `btn ${o.opened ? 'btn-outline' : 'btn-light'} block`, k: 'apply-site', act: 'opened' })}
         <p class="visited" style="margin:0 0 8px">${o.practice ? 'Practice: the visit is simulated' : esc(hostOf(o.applyUrl || o.source))}</p>
         <button class="btn btn-accent block" data-act="mark" data-k="mark">Mark as Submitted</button>
@@ -1653,6 +1661,7 @@ const A = {
   about: () => openSheet({ type: 'about' }),
   'ask-reset': () => { S.sheet.confirmReset = true; S.focusKey = 'sh-reset'; render(); },
   reset: () => { try { localStorage.removeItem(STORE_KEY); } catch {} S.opps = normalise(seedOpportunities()); S.cur = null; S.draft = null; S.filter = 'All'; go('home'); toast('Reset to the starting examples.'); },
+  'to-samples': () => { const first = $app.querySelector('.sample'); first?.scrollIntoView({ block: 'center', behavior: 'smooth' }); first?.focus({ preventScroll: true }); },
   sample: (d) => { S.url = d.url; S.urlError = null; S.focusKey = 'extract'; render(); },
   'cancel-extract': () => { extractTimers.forEach(clearTimeout); go('import'); },
   'back-import': () => go('import', { draft: null }),
