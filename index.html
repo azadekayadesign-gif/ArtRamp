@@ -390,7 +390,9 @@ svg.i.sm { width: 16px; height: 16px; }
 .section + .section { border-top: 1px solid var(--line); }
 .section > .h2 { margin-bottom: var(--s2); }
 .section .h3 { margin-bottom: var(--s2); }
-.legend { font-size: var(--t-small); color: var(--ink-muted); margin-bottom: var(--s4); line-height: 1.7; }
+.legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; margin: 0 0 var(--s4); font-size: 13px; line-height: 1.35; color: var(--ink-muted); }
+.legend > div { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
+.legend dt, .legend dd { margin: 0; }
 .info-block + .info-block { margin-top: var(--s5); }
 .info-block .label { margin-bottom: var(--s2); }
 .req { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
@@ -514,6 +516,7 @@ svg.i.sm { width: 16px; height: 16px; }
 @keyframes up { from { transform: translateY(24px); opacity: .4; } }
 .sheet .grip { width: 40px; height: 4px; border-radius: 4px; background: var(--line); margin: 0 auto var(--s4); }
 .sheet .h2 { margin-bottom: var(--s2); font-weight: 500; }
+.sheet .h2:focus { outline: none; }   /* title receives focus when a dialog opens; not an interactive control */
 .sheet p { color: var(--ink-muted); margin-bottom: var(--s3); }
 .sheet .url { padding: 12px var(--s3); border-radius: var(--radius-m); background: var(--alice); font-size: 14px; word-break: break-all; margin-bottom: var(--s3); }
 .sheet .btn + .btn { margin-top: var(--s2); }
@@ -599,6 +602,18 @@ svg.i.sm { width: 16px; height: 16px; }
 .hint-link:hover { text-decoration-thickness: 2px; }
 .submit-help { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 var(--s3); padding: 12px 14px; border-radius: var(--radius-m); background: var(--alice); font-size: 15px; line-height: 1.45; color: var(--ink); }
 .submit-help svg { width: 18px; height: 18px; margin-top: 2px; color: var(--ink-muted); }
+
+/* Dashboard subtitle: soft scrim behind the text only (WCAG AA 4.5:1 at the brightest pixel behind the
+   subtitle, measured in QA). Light on the left, building toward the bright staircase on the right. */
+.home-hero .lead { position: relative; z-index: 0; }
+.home-hero .lead::before {
+  content: ""; position: absolute; inset: -14px -48px -26px -24px; z-index: -1; pointer-events: none; border-radius: 48px;
+  background: linear-gradient(90deg, rgba(11,28,30,.20) 0%, rgba(11,28,30,.37) 40%, rgba(11,28,30,.68) 78%, rgba(11,28,30,.68) 100%);
+  filter: blur(22px);
+}
+@media (max-width: 359px) {   /* subtitle wraps to three lines: even out the scrim */
+  .home-hero .lead::before { background: linear-gradient(90deg, rgba(11,28,30,.34) 0%, rgba(11,28,30,.50) 40%, rgba(11,28,30,.68) 78%, rgba(11,28,30,.68) 100%); }
+}
 
 </style>
 </head>
@@ -1112,7 +1127,7 @@ function editVals(o) {
 function viewManual() {
   const edit = S.formMode === 'edit'; const eo = edit ? opp() : null;
   const v = S.manualVals || (edit ? editVals(eo) : {});
-  const chk = (id) => edit ? `<label class="chk-line"><input type="checkbox" name="chk_${id}" ${v['chk_' + id] ? 'checked' : ''} data-k="chk-${id}"><span>I checked this on the official page</span></label>` : '';
+  const chk = (id) => edit ? `<label class="chk-line"><input type="checkbox" name="chk_${id}" ${v['chk_' + id] ? 'checked' : ''} data-k="chk-${id}"><span>I checked this on the official page<span class="vh">(${({ deadline: 'Deadline', fee: 'Entry fee', elig: 'Eligibility', reqs: 'Requirements' })[id]})</span></span></label>` : '';
   const f = (id, label, opt = {}) => `<label class="field" for="m-${id}" style="margin-top:16px"><span class="label-text">${label}${opt.optional ? ' <span class="muted" style="font-weight:400">(optional)</span>' : ''}</span></label>
     ${opt.area ? `<textarea class="textarea" id="m-${id}" name="${id}" data-k="m-${id}" placeholder="${opt.ph || ''}">${esc(v[id] || '')}</textarea>`
       : `<input class="input" id="m-${id}" name="${id}" data-k="m-${id}" type="${opt.type || 'text'}" value="${esc(v[id] || '')}" placeholder="${opt.ph || ''}" autocomplete="off" ${id === 'title' && S.manualError ? 'aria-invalid="true" aria-describedby="m-err"' : ''}>`}`;
@@ -1232,7 +1247,12 @@ function viewEvaluate() {
 
       <section class="section" aria-labelledby="det-h">
         <h2 class="h2" id="det-h">Details</h2>
-        <p class="legend"><span class="tag ai">AI</span> extracted by ArtRamp · <span class="tag you">${ic('<path d="M5 12.5l4.5 4.5L19 7.5"/>')}Checked by you</span> you confirmed it · <strong>Verify</strong> and <strong>Not found</strong> need checking on the official website.</p>
+        <dl class="legend" aria-label="What the tags mean">
+          <div><dt><span class="tag ai">AI</span></dt><dd>Extracted by ArtRamp</dd></div>
+          <div><dt><span class="tag you">${ic('<path d="M5 12.5l4.5 4.5L19 7.5"/>')}Checked by you</span></dt><dd>Confirmed by the user</dd></div>
+          <div><dt>${qTag('verify')}</dt><dd>Check on the official website</dd></div>
+          <div><dt><span class="tag missing">Not found</span></dt><dd>Information was not found</dd></div>
+        </dl>
         <div class="info-block"><h3 class="label">Eligibility</h3><ul>${elig}</ul></div>
         <div class="info-block"><h3 class="label">Requirements and terms</h3><ul>${reqs}</ul></div>
         <button class="btn btn-outline block" style="margin-top:16px" data-act="edit-details" data-k="edit-details">Correct details</button>
@@ -1529,10 +1549,10 @@ function viewSheet() {
       <div class="sheet-actions"><button class="btn btn-dark block" data-act="confirm-dismiss" data-k="sh-ok">${saved ? 'Remove' : 'Dismiss'}</button><button class="btn btn-outline block" data-act="close-sheet" data-k="sh-cancel" data-autofocus>Keep reviewing</button></div>`;
   } else if (s.type === 'mark') {
     const p = progress(o);
-    body = `<h2 class="h2" id="sheet-h">Mark as submitted?</h2>
+    body = `<h2 class="h2" id="sheet-h" tabindex="-1" data-autofocus>Mark as submitted?</h2>
       <p>Only do this after you’ve submitted on the official website. ArtRamp can’t submit or check applications.</p>
       ${p.left ? `<div class="warn">${I.info}<span>${plural(p.left, 'planned task')} still open. You can still mark it as submitted.</span></div>` : ''}
-      <label class="confirm-check"><input type="checkbox" data-change="confirm" data-k="sh-confirm" ${s.ok ? 'checked' : ''}><span>I submitted my application on ${esc(o.org)}’s website.</span></label>
+      <label class="confirm-check"><input type="checkbox" id="sh-confirm" autocomplete="off" data-change="confirm" data-k="sh-confirm" ${s.ok ? 'checked' : ''}><span>I submitted my application on ${esc(o.org)}’s website.</span></label>
       <div class="sheet-actions"><button class="btn btn-accent block" data-act="confirm-mark" data-k="sh-ok" id="confirm-mark" ${s.ok ? '' : 'disabled'}>Confirm — Mark as Submitted</button><button class="btn btn-outline block" data-act="close-sheet" data-k="sh-cancel">Cancel</button></div>`;
   } else if (s.type === 'task') {
     const t = o.tasks.find((x) => x.id === s.id); if (!t) return '';
@@ -1602,6 +1622,13 @@ function render() {
     requestAnimationFrame(() => requestAnimationFrame(() => { el.style.width = to + '%'; }));
     lastPct[id] = to;
   });
+
+  // Submission modal: checkbox and Confirm button always reflect the sheet's own state
+  if (S.sheet && S.sheet.type === 'mark') {
+    const box = $app.querySelector('#sh-confirm'), ok = !!S.sheet.ok;
+    if (box) box.checked = ok;
+    const btn = $app.querySelector('#confirm-mark'); if (btn) btn.disabled = !ok;
+  }
 
   // Focus management
   const sheet = $app.querySelector('[data-sheet]');
