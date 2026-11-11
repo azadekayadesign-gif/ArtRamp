@@ -1256,14 +1256,15 @@ const FOLD = `<svg class="fold" viewBox="0 0 898 840" preserveAspectRatio="none"
 <linearGradient id="ffl" x1="748" y1="236" x2="845" y2="286" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#B5BBBF"/><stop offset=".45" stop-color="#D1D5DA"/><stop offset="1" stop-color="#DCDFE3"/></linearGradient>
 <linearGradient id="fst" x1="760" y1="540" x2="815" y2="568" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FBFBFB"/><stop offset=".55" stop-color="#E9EAEC"/><stop offset="1" stop-color="#DDE0E2"/></linearGradient>
 <linearGradient id="fbf" x1="720" y1="672" x2="650" y2="780" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#A3A8AB"/><stop offset=".45" stop-color="#B3B7BA"/><stop offset="1" stop-color="#C3C7CA"/></linearGradient>
-<filter id="fsh" x="-10%" y="-10%" width="125%" height="130%"><feDropShadow dx="6" dy="12" stdDeviation="11" flood-color="#0B1C1E" flood-opacity=".20"/></filter>
+
+<filter id="fbl" x="-10%" y="-10%" width="125%" height="130%"><feGaussianBlur stdDeviation="11"/></filter><linearGradient id="fmg" x1="560" y1="0" x2="640" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient><mask id="fmk" maskUnits="userSpaceOnUse" x="-100" y="-100" width="1100" height="1000"><rect x="-100" y="-100" width="1100" height="1000" fill="#fff"/><polygon fill="url(#fmg)" points="560,787.5 634,786 898,722 1000,722 1000,900 560,900"/></mask>
 </defs>
-<polygon fill="#0B1C1E" points="0,205 898,120 898,722 632,790 0,700"/>
+<polygon fill="#0B1C1E" points="0,205 898,120 898,722 634,786 0,700"/>
 <polygon fill="url(#fpa)" points="330,268 790,152 700,330 330,300"/>
 <polygon fill="url(#ffl)" points="790,152 862,350 700,328"/>
 <polygon fill="url(#fst)" points="846,348 857,350 762,669 676,700"/>
-<polygon fill="#FAF7F4" filter="url(#fsh)" points="64,224 856,350 634,786 -40,796"/>
-<polygon fill="url(#fbf)" points="688,673 763,668 636,789"/>
+<g mask="url(#fmk)"><polygon fill="#0B1C1E" fill-opacity=".20" filter="url(#fbl)" transform="translate(6 12)" points="64,224 856,350 634,786 -40,796"/></g><polygon fill="#FAF7F4" points="64,224 856,350 634,786 -40,796"/>
+<polygon fill="url(#fbf)" points="688,673 763,668 634,786"/>
 </svg>`;
 
 function viewHome() {
