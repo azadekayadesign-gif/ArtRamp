@@ -834,15 +834,25 @@ svg.i.sm { width: 16px; height: 16px; }
 .screen:has(.home-hero) .filters { margin-top: 0; }
 .screen:has(.home-hero) .btn-accent:hover:not(:disabled) { background: #FF5321; box-shadow: inset 0 0 0 2px #0B1C1E; }
 
-/* v18.1 — tagline under the logo. The folded-paper composition and content move down 20 px as one unit;
-   nothing else changes. "Miss nothing." uses the accessible orange for small text (#B3300A, 6.0:1 on Ivory). */
-.screen:has(.home-hero) .home-hero { height: 336px; }
-.screen:has(.home-hero) .home-hero .fold { top: 20px; height: calc(100% - 20px); }
-.screen:has(.home-hero) .home-hero .tagline { position: absolute; left: 29px; top: 33px; margin: 0; font: 500 13px/16px var(--font); color: #475B5F; letter-spacing: 0; }
+/* v18.2 — Dashboard hero geometry, measured from the final approved reference (898 px artboard → 390 px, ×0.4343).
+   One alignment grid: heading, description and button share a 44 px left edge on the Ivory sheet. */
+.screen:has(.home-hero) .home-hero { height: 365px; }
+.screen:has(.home-hero) .home-hero .brand-row { padding: 10px 21px 0 29px; height: auto; align-items: flex-start; }
+.screen:has(.home-hero) .brand .logo { height: 26px; }
+.screen:has(.home-hero) .demo-chip { margin-top: 7px; min-height: 26px; height: 26px; }
+.screen:has(.home-hero) .home-hero .tagline { position: absolute; left: 29px; top: 41px; margin: 0; font: 500 14px/16px var(--font); color: #475B5F; }
 .screen:has(.home-hero) .home-hero .tagline span { color: var(--pom-text); font-weight: 600; }
-.screen:has(.home-hero) .home-hero .display { top: 121px; }
-.screen:has(.home-hero) .home-hero .lead { top: 209px; }
-.screen:has(.home-hero) .home-hero .btn.block { top: 267px; }
+.screen:has(.home-hero) .home-hero .display { left: 44px; top: 117px; font-size: min(41.5px, 10.6vw); line-height: .9; letter-spacing: -0.03em; }
+.screen:has(.home-hero) .home-hero .lead { left: 45px; top: 208px; max-width: 205px; font-size: 15.5px; line-height: 20px; }
+.screen:has(.home-hero) .home-hero .btn.block { left: 42px; top: 281px; height: 44px; min-height: 44px; padding: 0 18px 0 17px; gap: 9px; border-radius: 14px; }
+.screen:has(.home-hero) .home-hero .display { font-size: min(42.3px, 10.8vw); }
+.screen:has(.home-hero) .home-hero .display .sw-dim { margin-bottom: 6px; }
+.screen:has(.home-hero) .demo-chip { margin-top: 8px; min-height: 25px; height: 25px; padding: 0 9px 0 6px; gap: 5px; font-size: 12.5px; }
+.screen:has(.home-hero) .demo-chip svg { width: 15px; height: 15px; }
+/* Narrow phones (< 390 px): keep the 390 px composition and crop its right edge rather than compressing it,
+   so the Import button always sits inside the Ivory sheet. At 390 px and wider the hero scales with the width. */
+.screen:has(.home-hero) .home-hero { overflow: hidden; }
+.screen:has(.home-hero) .home-hero .fold { right: auto; width: max(100%, 390px); }
 
 </style>
 </head>
@@ -1239,26 +1249,21 @@ const bar = (pct, label) => `<div class="bar" role="progressbar" aria-label="${e
 
 /* ======================= SCREEN 1 — MY OPPORTUNITIES ===================== */
 /* Dashboard hero: folded-paper composition (v18). Inline SVG traced from the approved reference
-   (1024 × 760 artboard); stretches with the hero box, sits behind the content, ignores pointer events. */
-const FOLD = `<svg class="fold" viewBox="0 0 1024 760" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+   (898 × 840 artboard = 390 × 365 px); stretches with the hero box, sits behind the content, ignores pointer events. */
+const FOLD = `<svg class="fold" viewBox="0 0 898 840" preserveAspectRatio="none" aria-hidden="true" focusable="false">
 <defs>
-<linearGradient id="fg1" x1="370" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#D7DBDD"/><stop offset="1" stop-color="#C6CBCE"/></linearGradient>
-<linearGradient id="fgl" x1="40" y1="0" x2="140" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#D6DADC"/><stop offset="1" stop-color="#BCC1C4"/></linearGradient>
-<linearGradient id="fpl" x1="950" y1="135" x2="700" y2="560" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FBFAF8"/><stop offset=".35" stop-color="#EEECEB"/><stop offset="1" stop-color="#ECEAEA"/></linearGradient>
-<linearGradient id="ffl" x1="700" y1="575" x2="640" y2="700" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#B3B9BC"/><stop offset="1" stop-color="#CDD1D3"/></linearGradient>
-<filter id="fsh" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#0B1C1E" flood-opacity=".22"/></filter>
-<clipPath id="fcl"><polygon points="0,0 1024,0 1024,760 560,716 40,700 0,700"/></clipPath>
+<linearGradient id="fpa" x1="560" y1="190" x2="580" y2="300" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E7EAED"/><stop offset=".7" stop-color="#E1E4E7"/><stop offset="1" stop-color="#D3D5D7"/></linearGradient>
+<linearGradient id="ffl" x1="748" y1="236" x2="845" y2="286" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#B5BBBF"/><stop offset=".45" stop-color="#D1D5DA"/><stop offset="1" stop-color="#DCDFE3"/></linearGradient>
+<linearGradient id="fst" x1="760" y1="540" x2="815" y2="568" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FBFBFB"/><stop offset=".55" stop-color="#E9EAEC"/><stop offset="1" stop-color="#DDE0E2"/></linearGradient>
+<linearGradient id="fbf" x1="720" y1="672" x2="650" y2="780" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#A3A8AB"/><stop offset=".45" stop-color="#B3B7BA"/><stop offset="1" stop-color="#C3C7CA"/></linearGradient>
+<filter id="fsh" x="-10%" y="-10%" width="125%" height="130%"><feDropShadow dx="6" dy="12" stdDeviation="11" flood-color="#0B1C1E" flood-opacity=".20"/></filter>
 </defs>
-<polygon fill="#0B1C1E" points="40,135 752,47 785,128 988,106 990,108 990,590 560,716 300,400 40,357"/>
-<polygon fill="#CBD0D3" points="780,128 988,106 965,132 950,135 797,192"/>
-<polygon fill="url(#fg1)" points="370,266 752,47 772,50 797,192 540,298"/>
-<line x1="772" y1="50" x2="797" y2="192" stroke="#B2B8BB" stroke-width="4"/>
-<g clip-path="url(#fcl)">
-<polygon fill="url(#fpl)" filter="url(#fsh)" points="540,298 950,135 965,130 745,592 665,572 850,365"/>
-<polygon fill="url(#fgl)" points="138,295 40,357 40,696 46,696 160,300"/>
-<polygon fill="#FAF7F4" filter="url(#fsh)" points="155,215 850,365 560,716 40,700"/>
-</g>
-<polygon fill="url(#ffl)" points="665,572 745,594 565,716"/>
+<polygon fill="#0B1C1E" points="0,205 898,120 898,722 632,790 0,700"/>
+<polygon fill="url(#fpa)" points="330,268 790,152 700,330 330,300"/>
+<polygon fill="url(#ffl)" points="790,152 862,350 700,328"/>
+<polygon fill="url(#fst)" points="846,348 857,350 762,669 676,700"/>
+<polygon fill="#FAF7F4" filter="url(#fsh)" points="64,224 856,350 634,786 -40,796"/>
+<polygon fill="url(#fbf)" points="688,673 763,668 636,789"/>
 </svg>`;
 
 function viewHome() {
