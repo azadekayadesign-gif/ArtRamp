@@ -145,11 +145,14 @@ svg.i.sm { width: 16px; height: 16px; }
 .stack > * + * { margin-top: var(--s3); }
 
 /* --- Photographic header (dashboard hero, every top bar, plans index) ----- */
-.home-hero,
+.home-hero {
+  position: relative; color: var(--on-photo); --focus: var(--alice);
+  background: var(--photo-shade), var(--hero-photo) 78% 100% / cover no-repeat, var(--swamp);
+}
 .topbar,
 .screen > main.scroll:first-child > .page-head:first-child {
   position: relative; color: var(--on-photo); --focus: var(--alice);
-  background: var(--photo-shade), var(--hero-photo) 78% 100% / cover no-repeat, var(--swamp);
+  background: var(--swamp);
 }
 .home-hero::after,
 .topbar::after,
@@ -340,7 +343,7 @@ svg.i.sm { width: 16px; height: 16px; }
 .extract, .done-wrap { position: relative; }
 .extract::before, .done-wrap::before {
   content: ""; position: absolute; left: 0; right: 0; top: 0; height: 132px;
-  background: var(--photo-shade), var(--hero-photo) 78% 100% / cover no-repeat, var(--swamp);
+  background: var(--swamp);
 }
 .extract::after, .done-wrap::after {
   content: ""; position: absolute; left: 0; right: 0; top: calc(132px - var(--cap)); height: var(--cap);
